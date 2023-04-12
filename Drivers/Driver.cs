@@ -10,7 +10,7 @@ namespace ZoomAutomation.Drivers
     {
         private static IWebDriver _driver;
 
-        [BeforeTestRun]
+        [BeforeScenario]
         public static void BeforeTestRun()
         {
             var options = new ChromeOptions();
@@ -19,7 +19,7 @@ namespace ZoomAutomation.Drivers
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
         }
 
-        [AfterTestRun]
+        [AfterScenario]
         public static void AfterTestRun()
         {
             _driver?.Quit();

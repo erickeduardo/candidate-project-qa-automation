@@ -68,6 +68,20 @@ namespace ZoomAutomation.Pages
             WaitForElementByTestId("ServiceLine.1");
         }
 
+        public bool IsHourAvailable(string hour)
+        {
+            var timeElements = _driver.FindElements(By.TagName("div"));
+            foreach (var time in timeElements)
+            {
+                if (time.Text.Contains(hour))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         public string GetTitle()
         {
             return _driver.Title;

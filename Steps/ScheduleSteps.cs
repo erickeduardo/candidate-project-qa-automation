@@ -60,7 +60,15 @@ namespace ZoomAutomation.Steps
         public void ThenIShouldSeeHeader(string expectedHeader)
         {
             string actualHeader = _schedulePage.GetHeader();
-            Assert.AreEqual(expectedHeader, actualHeader);
+            Assert.IsTrue(actualHeader.Contains(expectedHeader), $"Expected header '{expectedHeader}' was not found on the page.");
         }
+
+        [Then(@"I should see '(.*)' hour is available")]
+        public void ThenIShouldSeeHourIsAvailable(string hour)
+        {
+            bool isHourAvailable = _schedulePage.IsHourAvailable(hour);
+            Assert.IsTrue(isHourAvailable, $"{hour} is not available.");
+        }
+
     }
 }

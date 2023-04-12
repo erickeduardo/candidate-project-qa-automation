@@ -5,6 +5,7 @@ using SeleniumExtras.WaitHelpers;
 using Microsoft.Extensions.Configuration;
 using ZoomAutomation.Drivers;
 using System;
+using System.Linq;
 
 namespace ZoomAutomation.Pages
 {
@@ -25,6 +26,9 @@ namespace ZoomAutomation.Pages
         private IWebElement serviceSelector => _driver.FindElement(By.CssSelector("[data-testid='quickSelector.serviceSelector']"));
         private IWebElement dateSelector => _driver.FindElement(By.CssSelector("[data-testid='quickSelector.dateSelector']"));
         private IWebElement searchButton => _driver.FindElement(By.CssSelector("[data-testid='button-quickSelector.searchButton']"));
+        private IWebElement virtualClinicBoxButton => _driver.FindElement(By.CssSelector("[data-testid='virtualClinicBox']"));
+        private IWebElement virtualVideoBoxButton => _driver.FindElement(By.CssSelector("[data-testid='virtualVideoBox']"));
+        private IWebElement showMoreButton => _driver.FindElement(By.CssSelector("[data-testid='text-Show More']"));
 
         public void Navigate()
         {
@@ -37,6 +41,13 @@ namespace ZoomAutomation.Pages
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"[data-testid='{testId}']")));
         }
+
+        private void WaitForProgressbarToDisappear()
+        {
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            wait.Until(driver => !driver.FindElements(By.CssSelector("[role='progressbar']")).Any());
+        }
+
 
         public void SetLocation(string location)
         {
@@ -87,6 +98,11 @@ namespace ZoomAutomation.Pages
             return _driver.Title;
         }
 
+        public string GetUrl()
+        {
+            return _driver.Url;
+        }
+
         public string GetHeader()
         {
             return _driver.FindElement(By.TagName("h1")).Text;
@@ -113,6 +129,28 @@ namespace ZoomAutomation.Pages
             }
         }
 
+        public void ClickShowMoreButton()
+        {
+            showMoreButton.Click();
+            WaitForProgressbarToDisappear();
+        }
+
+        public int CountClinicLocationRows()
+        {
+            var elements = _driver.FindElements(By.CssSelector("[data-testid^='ServiceLine.1.Clinic.'][data-testid$='.LocationRow']"));
+            return elements.Count;
+        }
+
+        public bool VirtualClinicBoxExists()
+        {
+            return virtualClinicBoxButton.Displayed;
+        }
+
+        public bool VirtualVideoBoxExists()
+        {
+            return virtualVideoBoxButton.Displayed;
+        }
+
         public void ClickDivByText(string text)
         {
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
@@ -127,11 +165,22 @@ namespace ZoomAutomation.Pages
             }
         }
 
+        public void ClickProviderByCssSelector(string selector)
+        {
+            var div = _driver.FindElement(By.CssSelector(selector));
+            div.Click();
+        }
+
         public void WaitForClickableElement(IWebElement element)
         {
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
             wait.Until(ExpectedConditions.ElementToBeClickable(element));
         }
 
+        public void WaitForUrlContains(string partialUrl)
+        {
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            wait.Until(ExpectedConditions.UrlContains(partialUrl));
+        }
     }
 }
